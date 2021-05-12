@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.SupplierDao">
+
+    <select id="getSupplierList" resultType="com.bjpowernode.crm.workbench.domain.Supplier">
+        select * from tbl_supplier1
+    </select>
+
+
+    <select id="pageList" resultType="com.bjpowernode.crm.workbench.domain.Supplier">
+        select
+        id,
+        name,
+        website,
+        phone,
+        createBy,
+        createTime,
+        editBy,
+        editTime,
+        description,
+        address
+        from tbl_supplier1
+        <where>
+            <if test="name!=null and name!=''">
+                name like '%' #{name} '%'
+            </if>
+            <if test="phone!=null and phone!=''">
+                and phone like '%' #{phone} '%'
+            </if>
+            <if test="website!=null and website!=''">
+                and website like '%' #{website} '%'
+            </if>
+        </where>
+        order by createTime desc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+
+    <select id="getCount" resultType="int">
+        select
+        count(*)
+        from tbl_supplier1
+        <where>
+            <if test="name!=null and name!=''">
+                name like '%' #{name} '%'
+            </if>
+            <if test="phone!=null and phone!=''">
+                and phone like '%' #{phone} '%'
+            </if>
+            <if test="website!=null and website!=''">
+                and website like '%' #{website} '%'
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="addSupplier">
+        insert into tbl_supplier1
+        values(
+            #{id},
+	        #{name},
+	        #{website},
+	        #{phone},
+	        #{createBy},
+	        #{createTime},
+	        #{editBy},
+	        #{editTime},
+	        #{description},
+	        #{address}
+	)
+    </insert>
+
+    <select id="getSupplier" resultType="com.bjpowernode.crm.workbench.domain.Supplier">
+        select * from tbl_supplier1 where id = #{id}
+    </select>
+
+
+    <update id="updateSupplier">
+        update tbl_supplier1 set
+		name = #{name},
+		website = #{website},
+		phone = #{phone},
+		editBy = #{editBy},
+		editTime = #{editTime},
+		description = #{description},
+		address = #{address}
+		where id = #{id}
+    </update>
+
+    <delete id="deleteSupplier">
+        delete from tbl_supplier1
+        where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

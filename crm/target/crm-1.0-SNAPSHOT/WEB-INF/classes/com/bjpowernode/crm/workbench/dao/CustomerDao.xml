@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.CustomerDao">
+    <select id="isExist" resultType="com.bjpowernode.crm.workbench.domain.Customer">
+        select  * from tbl_customer
+        where name = #{company}
+    </select>
+
+	<insert id="addCustomer">
+        insert into tbl_customer
+        values(
+            #{id},
+	        #{owner},
+	        #{name},
+	        #{website},
+	        #{phone},
+	        #{createBy},
+	        #{createTime},
+	        #{editBy},
+	        #{editTime},
+	        #{contactSummary},
+	        #{nextContactTime},
+	        #{description},
+	        #{address}
+	)
+    </insert>
+
+	<select id="pageList" resultType="com.bjpowernode.crm.workbench.domain.Customer">
+		select
+		a.id,
+		b.name as owner,
+		a.name,
+		a.website,
+		a.phone,
+		a.createBy,
+		a.createTime,
+		a.editBy,
+		a.editTime,
+		a.contactSummary,
+		a.nextContactTime,
+		a.description,
+		a.address
+		from tbl_customer a
+		join tbl_user b
+		on a.owner = b.id
+		<where>
+			<if test="name!=null and name!=''">
+				a.name like '%' #{name} '%'
+			</if>
+			<if test="owner!=null and owner!=''">
+				and b.name like '%' #{owner} '%'
+			</if>
+			<if test="phone!=null and phone!=''">
+				and a.phone like '%' #{phone} '%'
+			</if>
+			<if test="website!=null and website!=''">
+				and a.website like '%' #{website} '%'
+			</if>
+		</where>
+		order by a.createTime desc
+		limit #{skipCount},#{pageSize}
+	</select>
+
+
+	<select id="getCount" resultType="int">
+		select
+		count(*)
+		from tbl_customer a
+		join tbl_user b
+		on a.owner = b.id
+		<where>
+			<if test="name!=null and name!=''">
+				a.name like '%' #{name} '%'
+			</if>
+			<if test="owner!=null and owner!=''">
+				and b.name like '%' #{owner} '%'
+			</if>
+			<if test="phone!=null and phone!=''">
+				and a.phone like '%' #{phone} '%'
+			</if>
+			<if test="website!=null and website!=''">
+				and a.website like '%' #{website} '%'
+			</if>
+		</where>
+	</select>
+
+	<select id="getDetail" resultType="com.bjpowernode.crm.workbench.domain.Customer">
+		select
+		a.id,
+		b.name as owner,
+		a.name,
+		a.website,
+		a.phone,
+		a.createBy,
+		a.createTime,
+		a.editBy,
+		a.editTime,
+		a.contactSummary,
+		a.nextContactTime,
+		a.description,
+		a.address
+		from tbl_customer a
+		join tbl_user b
+		on a.owner = b.id
+		where a.id = #{id}
+	</select>
+
+
+	<update id="updateCustomer">
+		update tbl_customer set
+		owner = #{owner},
+		name = #{name},
+		website = #{website},
+		phone = #{phone},
+		editBy = #{editBy},
+		editTime = #{editTime},
+		contactSummary = #{contactSummary},
+		nextContactTime = #{nextContactTime},
+		description = #{description},
+		address = #{address}
+		where id = #{id}
+	</update>
+
+	<delete id="deleteCustomer">
+		delete from tbl_customer
+		where id in
+		<foreach collection="array" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<select id="getCustomerById" resultType="com.bjpowernode.crm.workbench.domain.Customer">
+		select * from tbl_customer
+		where id = #{id}
+	</select>
+
+	<select id="getCustomerName" resultType="string">
+		select name from tbl_customer
+		where name like '%' #{name} '%'
+	</select>
+
+</mapper>

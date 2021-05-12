@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.CustomerGoodsRelationDao">
+    <insert id="addRelation">
+        insert into tbl_customer_goods_relation
+        values (
+        #{id},
+	    #{customerId},
+	    #{goodId}
+        )
+    </insert>
+
+    <select id="getCountCid" resultType="int">
+        select count(*) from tbl_customer_goods_relation
+        where customerId in
+        <foreach collection="array" item="customerId" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+    </select>
+
+    <delete id="deleteByCid">
+        delete from tbl_customer_goods_relation
+        where customerId in
+        <foreach collection="array" item="customerId" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+    </delete>
+
+    <delete id="unbund">
+        delete from tbl_customer_goods_relation
+        where id = #{id}
+    </delete>
+
+    <insert id="addRelation2">
+        insert into tbl_customer_goods_relation
+        values
+        <foreach collection="list" item="goodsRelation"  separator="," index="index">
+            (
+            #{goodsRelation.id},#{goodsRelation.customerId},#{goodsRelation.goodId}
+            )
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.GoodsRemarkDao">
+    <select id="findAllRemarksCount" resultType="int">
+        select count(*) from tbl_goods_remark1 where goodId in
+            <foreach collection="array" item="goodId" open="(" separator="," close=")">
+                #{goodId}
+            </foreach>
+    </select>
+
+    <delete id="deleteRemarksById">
+        delete from tbl_goods_remark1 where goodId in
+            <foreach collection="array" item="goodId" open="(" separator="," close=")">
+                 #{goodId}
+            </foreach>
+    </delete>
+
+    <select id="showRemarkList" resultType="com.bjpowernode.crm.workbench.domain.GoodsRemark">
+        select * from tbl_goods_remark1 where goodId = #{goodId} order by createTime desc
+    </select>
+
+    <delete id="deleteRemark">
+        delete from tbl_goods_remark1 where id = #{id}
+    </delete>
+
+    <update id="updateRemark">
+        update tbl_goods_remark1 set
+        noteContent = #{noteContent},
+        editTime = #{editTime},
+        editBy = #{editBy},
+        editFlag = #{editFlag}
+        where id = #{id}
+    </update>
+
+    <select id="selectRemarkById" resultType="com.bjpowernode.crm.workbench.domain.GoodsRemark">
+        select * from tbl_goods_remark1 where id = #{id}
+    </select>
+
+    <insert id="addRemark">
+        insert into tbl_goods_remark1
+        (id,noteContent,createTime,createBy,editFlag,goodId)
+        values
+        (#{id},#{noteContent},#{createTime},#{createBy},#{editFlag},#{goodId})
+    </insert>
+</mapper>

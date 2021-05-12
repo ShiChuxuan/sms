@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.OrderGoodsRelationDao">
+    <delete id="unbund">
+        delete from tbl_order_goods_relation
+        where id = #{id}
+    </delete>
+    
+    <insert id="relate">
+        insert into tbl_order_goods_relation
+        Values
+        <foreach collection="list" item="orderGoodsRelations"  separator=","  index="index">
+            (
+            #{orderGoodsRelations.id},#{orderGoodsRelations.orderId},#{orderGoodsRelations.goodId}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getGoodIds" resultType="string">
+        select goodId from tbl_order_goods_relation where orderId = #{orderId}
+    </select>
+
+    <delete id="deleteByOrderId">
+        delete from tbl_order_goods_relation where orderId = #{orderId}
+    </delete>
+</mapper>

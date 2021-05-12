@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.TranGoodsRelationDao">
+    <delete id="unbund">
+        delete from tbl_tran_goods_relation
+        where id = #{id}
+    </delete>
+
+    <select id="isExist" resultType="com.bjpowernode.crm.workbench.domain.TranGoodsRelation">
+        select  * from tbl_tran_goods_relation
+        where tranId = #{tranId} and goodId = #{goodId}
+    </select>
+
+    <insert id="orderGood">
+        insert into tbl_tran_goods_relation
+        (id,tranId,goodId,amount)
+        values (
+        #{id},#{tranId},#{goodId},#{amount}
+        )
+    </insert>
+
+    <update id="updateRelation">
+        update tbl_tran_goods_relation set
+        amount = #{amount}
+        where id = #{id}
+    </update>
+</mapper>

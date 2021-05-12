@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.TranDao">
+
+    <insert id="addTran">
+    insert into tbl_tran
+    values (
+        #{id},
+        #{owner},
+        #{money},
+        #{name},
+        #{expectedDate},
+        #{customerId},
+        #{stage},
+        #{type},
+        #{source},
+        #{contactsId},
+        #{createBy},
+        #{createTime},
+        #{editBy},
+        #{editTime},
+        #{description},
+        #{contactSummary},
+        #{nextContactTime}
+    )
+</insert>
+
+    <select id="showTranList" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select * from tbl_tran
+        where customerId = #{customerId}
+    </select>
+
+    <delete id="deleteTran">
+        delete from tbl_tran where id = #{id}
+    </delete>
+
+    <select id="getTidByCid" resultType="string">
+        select id from tbl_tran
+        where customerId in
+        <foreach collection="array" item="customerId" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+    </select>
+
+    <select id="getCountByCid" resultType="int">
+        select count(*) from tbl_tran
+        where customerId in
+        <foreach collection="array" item="customerId" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+    </select>
+
+    <delete id="deleteTranByCid">
+        delete from tbl_tran
+        where customerId in
+        <foreach collection="array" item="customerId" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+    </delete>
+
+    <select id="pageList" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select
+        a.id,
+        b.name as owner,
+        a.money,
+        a.name,
+        a.expectedDate,
+        c.name as customerId,
+        a.stage,
+        a.type,
+        a.source,
+        d.fullname as contactsId,
+        a.createBy,
+        a.createTime,
+        a.editBy,
+        a.editTime,
+        a.description,
+        a.contactSummary,
+        a.nextContactTime
+        from tbl_tran a
+        join tbl_user b
+        on a.owner = b.id
+        join tbl_customer c
+        on a.customerId = c.id
+        left join tbl_contacts d
+        on a.contactsId = d.id
+        <where>
+            <if test="owner!=null and owner!=''">
+                b.name like '%' #{owner} '%'
+            </if>
+
+            <if test="name!=null and name!=''">
+                and a.name like '%' #{name} '%'
+            </if>
+
+            <if test="customer!=null and customer!=''">
+                and c.name like '%' #{customer} '%'
+            </if>
+
+            <if test="stage!=null and stage!=''">
+                and a.stage = #{stage}
+            </if>
+
+            <if test="type!=null and type!=''">
+                and a.type = #{type}
+            </if>
+
+            <if test="source!=null and source!=''">
+                and a.source = #{source}
+            </if>
+
+            <if test="contacts!=null and contacts!=''">
+                and d.fullname like '%' #{contacts} '%'
+            </if>
+
+        </where>
+        order by a.createTime desc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select
+        count(*)
+        from tbl_tran a
+        join tbl_user b
+        on a.owner = b.id
+        join tbl_customer c
+        on a.customerId = c.id
+        left join tbl_contacts d
+        on a.contactsId = d.id
+        <where>
+            <if test="owner!=null and owner!=''">
+                b.name like '%' #{owner} '%'
+            </if>
+
+            <if test="name!=null and name!=''">
+                and a.name like '%' #{name} '%'
+            </if>
+
+            <if test="customer!=null and customer!=''">
+                and c.name like '%' #{customer} '%'
+            </if>
+
+            <if test="stage!=null and stage!=''">
+                and a.stage = #{stage}
+            </if>
+
+            <if test="type!=null and type!=''">
+                and a.type = #{type}
+            </if>
+
+            <if test="source!=null and source!=''">
+                and a.source = #{source}
+            </if>
+
+            <if test="contacts!=null and contacts!=''">
+                and d.fullname = #{contacts}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="getUserListAndTran" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select
+        a.id,
+        a.owner,
+        a.money,
+        a.name,
+        a.expectedDate,
+        b.name as customerId,
+        a.stage,
+        a.type,
+        a.source,
+        c.fullname as contactsId,
+        a.description,
+        a.contactSummary,
+        a.nextContactTime
+        from tbl_tran a
+        join tbl_customer b
+        on a.customerId = b.id
+        left join tbl_contacts c
+        on a.contactsId = c.id
+        where a.id = #{id}
+    </select>
+
+    <update id="updateTran">
+        update tbl_tran set
+	    owner = #{owner},
+	    money = #{money},
+	    name = #{name},
+	    expectedDate = #{expectedDate},
+	    customerId = #{customerId},
+	    stage = #{stage},
+	    type = #{type},
+	    source = #{source},
+	    contactsId = #{contactsId},
+	    editBy = #{editBy},
+	    editTime = #{editTime},
+	    description = #{description},
+	    contactSummary = #{contactSummary},
+	    nextContactTime = #{nextContactTime}
+        where id = #{id}
+
+    </update>
+
+    <delete id="deleteTrans">
+        delete from tbl_tran
+        where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getDetail" resultType="com.bjpowernode.crm.workbench.domain.Tran">
+        select
+        a.id,
+        b.name as owner,
+        a.money,
+        a.name,
+        a.expectedDate,
+        c.name as customerId,
+        a.stage,
+        a.type,
+        a.source,
+        d.fullname as contactsId,
+        a.createBy,
+        a.createTime,
+        a.editBy,
+        a.editTime,
+        a.description,
+        a.contactSummary,
+        a.nextContactTime
+        from tbl_tran a
+        join tbl_user b
+        on a.owner = b.id
+        join tbl_customer c
+        on a.customerId = c.id
+        left join tbl_contacts d
+        on a.contactsId = d.id
+        where a.id = #{id}
+    </select>
+
+    <update id="changeStage">
+        update tbl_tran set
+        stage = #{stage},
+        editTime = #{editTime},
+        editBy = #{editBy}
+        where id = #{id}
+    </update>
+</mapper>

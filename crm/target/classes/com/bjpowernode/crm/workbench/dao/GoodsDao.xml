@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.GoodsDao">
+
+    <insert id="addGood">
+        insert into tbl_goods1
+        (id,sid,name,firstDate,lastDate,cost,description,createTime,createBy,price,amount)
+        values
+        (#{id},#{sid},#{name},#{firstDate},#{lastDate},#{cost},#{description},#{createTime},#{createBy},#{price},#{amount})
+    </insert>
+
+    <select id="isExisted" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        select * from tbl_goods1
+        where sid = #{sid}
+        and name = #{name}
+    </select>
+
+    <select id="getTotalCondition" resultType="int">
+        select
+        count(*)
+        from tbl_goods1 a
+        <where>
+            <if test="name!=null and name!=''">
+                a.name like '%' #{name} '%'
+            </if>
+            <if test="supplier!=null and supplier!=''">
+                and a.sid = #{supplier}
+            </if>
+            <if test="firstDate!=null and firstDate!=''">
+                and a.firstDate = #{firstDate}
+            </if>
+            <if test="lastDate!=null and lastDate!=''">
+                and a.lastDate = #{lastDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="pageList" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        select
+        a.id,
+        b.name as sid,
+        a.name,
+        a.firstDate,
+        a.lastDate,
+        a.cost,
+        a.description,
+        a.createTime,
+        a.createBy,
+        a.editTime,
+        a.editBy,
+        a.price,
+        a.amount
+        from tbl_goods1 a
+        join tbl_supplier1 b
+        on a.sid = b.id
+
+        <where>
+            <if test="name!=null and name!=''">
+                a.name like '%' #{name} '%'
+            </if>
+            <if test="supplier!=null and supplier!=''">
+                and a.sid = #{supplier}
+            </if>
+            <if test="firstDate!=null and firstDate!=''">
+                and a.firstDate = #{firstDate}
+            </if>
+            <if test="lastDate!=null and lastDate!=''">
+                and a.lastDate = #{lastDate}
+            </if>
+        </where>
+        order by a.createTime desc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <delete id="deleteGood">
+        delete from tbl_goods1
+        where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectGoodById" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        select * from tbl_goods1 where id = #{id}
+    </select>
+
+    <update id="updateGood">
+        update tbl_goods1 set
+        sid = #{sid},
+        name = #{name},
+        firstDate = #{firstDate},
+        lastDate = #{lastDate},
+        cost = #{cost},
+        description = #{description},
+        editTime = #{editTime},
+        editBy = #{editBy}
+        <if test="price!=null and price!=''">
+            ,price = #{price}
+        </if>
+        <if test="amount!=null and amount!=''">
+            ,amount= #{amount}
+        </if>
+        where id = #{id}
+    </update>
+
+    <select id="getDetail" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        select
+        a.id,
+        b.name as sid,
+        a.name,
+        a.firstDate,
+        a.lastDate,
+        a.cost,
+        a.description,
+        a.createTime,
+        a.createBy,
+        a.editTime,
+        a.editBy,
+        a.price,
+        a.amount
+        from tbl_goods1 a
+        join tbl_supplier1 b
+        on a.sid = b.id
+
+        where a.id = #{id}
+
+    </select>
+
+    <select id="getGoodListByOrderId" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        select
+        c.id as id,
+        a.name,
+        b.name as sid,
+        a.price,
+        a.amount
+        from tbl_goods1 a
+        join tbl_supplier1 b
+        on a.sid = b.id
+        join tbl_order_goods_relation c
+        on a.id = c.goodId
+        where c.orderId = #{orderId}
+    </select>
+
+    <select id="getGoodListByNameAndNotByOrderId" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        SELECT a.id,a.name,b.name as sid,a.price,a.amount
+        FROM tbl_goods1 a
+        JOIN tbl_supplier1 b
+        on a.sid = b.id
+        WHERE a.id
+        NOT IN (SELECT goodId FROM tbl_order_goods_relation WHERE orderId = #{orderId})
+        <if test="name!=null and name!=''">
+            and a.name like '%' #{name} '%'
+        </if>
+    </select>
+
+    <select id="getGoodListByCustomerId" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        SELECT
+        c.id as id,
+        b.name as sid,
+        a.name,
+        a.price,
+        a.amount
+        from tbl_goods1 a
+        join tbl_supplier1 b
+        on a.sid = b.id
+        join tbl_customer_goods_relation c
+        on a.id = c.goodId
+        where c.customerId = #{customerId}
+    </select>
+
+    <select id="getGoodListByNameAndNotByCustomerId" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        SELECT
+        a.id,
+        a.name,
+        b.name as sid,
+        a.price,
+        a.amount
+        from tbl_goods1 a
+        join tbl_supplier1 b
+        on a.sid = b.id
+        where
+        a.id not in
+        (select goodId from tbl_customer_goods_relation where customerId = #{customerId})
+        <if test="name!=null and name!=''">
+            and a.name like '%' #{name} '%'
+        </if>
+
+    </select>
+
+    <select id="getGoodByName" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        select
+        a.id,
+        b.name as sid,
+        a.name,
+        a.amount,
+        a.price
+        from tbl_goods1 a
+        join tbl_supplier1 b
+        on a.sid = b.id
+        where a.name like '%' #{name} '%'
+    </select>
+
+    <select id="showGoodList" resultType="com.bjpowernode.crm.workbench.domain.Goods">
+        SELECT c.id as id,a.name,b.name as sid,a.price,a.amount,c.amount as amount2
+        FROM tbl_goods1 a
+        JOIN tbl_supplier1 b
+        ON a.sid = b.id
+        JOIN tbl_tran_goods_relation c
+        ON a.id = c.goodId
+        WHERE c.tranId = #{id}
+    </select>
+
+    <update id="updateGoodAmount">
+        update tbl_goods1 set
+        amount = #{amount}
+        where id = #{id}
+    </update>
+</mapper>

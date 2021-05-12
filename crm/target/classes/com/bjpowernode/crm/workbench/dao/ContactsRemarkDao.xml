@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ContactsRemarkDao">
+<insert id="addRemark">
+    insert into tbl_contacts_remark
+    values (
+    #{id},
+	#{noteContent},
+	#{createBy},
+	#{createTime},
+	#{editTime},
+	#{editBy},
+	#{editFlag},
+	#{contactsId}
+    )
+</insert>
+
+	<select id="getCountByContactId" resultType="int">
+		select count(*) from tbl_contacts_remark
+		where contactsId in
+		<foreach collection="list"  item="contactsId" open="(" separator="," close=")">
+			#{contactsId}
+		</foreach>
+	</select>
+
+	<delete id="deleteByContactId">
+		delete from tbl_contacts_remark
+		where contactsId in
+		<foreach collection="list"  item="contactsId" open="(" separator="," close=")">
+			#{contactsId}
+		</foreach>
+	</delete>
+
+	<select id="showRemarkList" resultType="com.bjpowernode.crm.workbench.domain.ContactsRemark">
+		select * from tbl_contacts_remark
+		where contactsId = #{contactsId}
+	</select>
+
+	<update id="updateRemark">
+		update tbl_contacts_remark set
+        noteContent = #{noteContent},
+        editTime = #{editTime},
+        editBy = #{editBy},
+        editFlag = #{editFlag}
+        where id = #{id}
+	</update>
+
+	<select id="selectRemarkById" resultType="com.bjpowernode.crm.workbench.domain.ContactsRemark">
+		select * from tbl_contacts_remark where id = #{id}
+	</select>
+
+
+	<delete id="deleteRemark">
+		delete from tbl_contacts_remark
+		where id = #{id}
+	</delete>
+
+</mapper>
